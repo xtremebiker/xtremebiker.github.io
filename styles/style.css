@@ -1,0 +1,21 @@
+body{
+    background: linear-gradient(to bottom right, #780206, #061161);
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: "Courier New";
+    color: white;
+}
+
+#avatar{
+    max-width: 400px;
+}
+
+.vertical-center {
+    min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+    min-height: 100vh; /* These two lines are counted as one :-)       */
+  
+    display: flex;
+    align-items: center;
+  }
