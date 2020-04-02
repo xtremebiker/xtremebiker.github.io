@@ -5,24 +5,88 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
         crossorigin="anonymous">
     <link rel="stylesheet" href="styles/style.css">
+    <!-- <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/default.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+    <link rel="stylesheet" href="styles/dracula.css">
+    <script>hljs.initHighlightingOnLoad();</script> -->
 </head>
 
 <body>
 
-    <div class="container-fluid" style="margin-top: 150px;">
-                    <div class="row">
-                      <div class="col-sm">
-                            <h3>Who Am I?</h3>
-                      </div>
-                      <div class="col-sm">
-                            <img id="avatar" src="images/profile.jpg" class="rounded-circle img-thumbnail img-fluid" />
-                      </div>
-                      <div class="col-sm">
-                            <h3>I'm an adventurer</h3>
-                      </div>
-                    </div>
-    </div>
+    <nav class="navbar navbar-dark bg-dark">
+      <a class="navbar-brand mx-auto" href="#">Building a car pooling application</a>
+    </nav>
 
+    <div class="container-fluid p-3">
+      <div class="row">
+          <div class="sidebar-expanded col-lg-3 d-none d-md-block">        
+            <ul class="list-group sticky-top sticky-offset p-5">
+              <li><a href="#domain">Setting up the domain and the servers</a></li>
+              <li><a href="#ssh">Talking to the servers</a></li>
+              <li><a href="#sso">Keycloak as my SSO solution</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-6 col-sm-12">
+            <p>Couple of months ago, when I was sharing a car to work with seven or eight more people, I considered to implement
+                some kind of application to decide who should be driving his/her car each of the days. It seems somehow easy to decide it,
+                but when you are many people, some of them could take the day off at work, get sick, even some of them don't have a car...
+                There are many cases to take into account, so it deserves having a program to make the choice for us. So let's do it!
+            </p>
+            <p id="domain" class="h4">Setting up the domain and the servers</p>
+            <p>Well, I decided to go with the infrastructure firstly. 
+                It might sound a bit weird, but having spent the last years mostly as a web developer, 
+                I had never dealt with hosting/domain administration myself before, so it was the perfect time to start with it.
+                I decided to go with the <a href="https://www.ovh.com">OVH provider</a>, so I signed up in their site to set up my domain:
+                <a href="images/domain.png">
+                  <img src="images/domain.png" class="img-thumbnail p-2">
+                </a>
+            </p>
+            <p>Once having my domain, the next step was to order the servers. Since the very beginning I was planning a simple architecture configuration, 
+              which involves two servers, one would be for the SSO (Single Sign On) server and the other for the application itself. 
+              OVH provides virtual servers at a very affordable price, so I chose the cheapest plan, with 1 virtual core and 2 GB of RAM, 
+              considering that the traffic won't be too high, that should be enough to fulfill my needs. The OS I chose was Ubuntu Server 18.04.</p>
+            <p>Then I had the domain and the servers, I want the servers to have names in that domain. OVH gives those ugly default names to the servers, so I set up two subdomains
+              into my main domain, which are auth.quienconduce.com for the SSO server and www.quienconduce.com for my application. Those names are registered as
+              <a href="https://en.wikipedia.org/wiki/CNAME_record">CNAME DNS records</a> and targeted to the OVH virtual server names.
+            </p>
+            <p>Since I wanted my application to have a professional appearance, I also bought a mail server service for my domain. The cheapest OVH fares offer up to five accounts, which
+              seems more than enough for what I need:
+              <a href="images/mailing.png">
+                <img src="images/mailing.png" class="img-thumbnail p-2">
+              </a>
+              This will be the mail server for sending the mail notifications for the users Sign-up process and mail notifications.
+            </p>
+            <p>Apart from this, I also wanted the main domain name
+              to redirect to my application. This means, redirect quienconduce.com requests to https://www.quienconduce.com, so I set up a
+              <a href="https://en.wikipedia.org/wiki/CNAME_record">permanent visible redirection</a> for this, returning the 301 HTTP code as a response 
+              and pointing to my application url when requested. This is the whole picture of my redirections, 
+              including the ones for the mail server and for the database management of each of the applications, which is web based and I will explain later on:
+              <a href="images/redirections.png">
+                <img src="images/redirections.png" class="img-thumbnail p-2">
+              </a></p>
+            <p id="ssh" class="h4">Talking to the servers</p>
+            <p>I'm using Linux Mint at home, where SSH client package is already installed, so connecting to the servers is a one liner such as:<pre><code>> ssh root@www.quienconduce.com</code></pre> Anyway,
+              keep in mind that using the root user directly isn't advisable, so better create a standard user and add it to the sudoers group with these steps:<pre><code>> adduser aritz
+> usermod -aG sudo james</code></pre>
+Then log in with the standard user and use <span class="font-weight-bold">sudo</span> when required:
+<pre><code>> ssh aritz@www.quienconduce.com</code></pre>
+            </p>
+            <p id="sso" class="h4">Keycloak as my SSO solution</p>
+            <p><a href="https://www.keycloak.org/">Keycloak</a> is a Single Sign On solution brought by Red Hat, which provides:
+              <ul>
+                <li>User Management</li>
+                <li><a href="https://oauth.net/">OAuth flow</a> implementations</li>
+                <li>High compatibility with the Java Spring Framework</li>
+              </ul>
+              The main advantage of using an already built open source product for securizing any application is that there are many people working on it, who are considered to have
+              more expertise than myself or any full stack focused programmer in the security field. The IT security by itself is a complex subject, so better use already available libs/software, 
+              as long as they are backed by trusted companies/comunity.
+            </p>
+            <p>Since I've used Docker for containerizing many of the applications that I have made, this was the choice for me this time too.</p>
+          </div>
+          <div class="col-lg-3"></div>
+      </div>
+    </div>
 </body>
 
 </html>
