@@ -15,14 +15,11 @@ body{
     align-items: center;
 }
 
-a p {
-    font-size: 16px;
-}
-
 pre {
     background-color: black;
     border-radius: 5px;
     padding: 5px;
+    overflow-x:scroll;
 }
 
 pre code {
@@ -32,8 +29,4 @@ pre code {
 img, p {
     margin-top: 10px;
     margin-bottom: 10px;
-}
-
-#menu {
-    font-size: 20px;
 }
