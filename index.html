@@ -2,91 +2,238 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
-        crossorigin="anonymous">
-    <link rel="stylesheet" href="styles/style.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Chrome, Firefox OS and Opera -->
+  <meta name="theme-color" content="#272626">
+  <!-- iOS Safari -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="#272626">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+    integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles/style.css">
 </head>
 
 <body>
 
-    <nav class="navbar navbar-dark bg-dark">
-      <span class="h2 mx-auto">Building a car pooling application</span>
-    </nav>
+  <nav class="navbar navbar-dark bg-dark">
+    <span class="h2 mx-auto">Car pooling application architecture and setting up</span>
+  </nav>
 
-    <div class="container-fluid p-3">
-      <div class="row">
-          <div class="sidebar-expanded col-lg-3 d-none d-md-block">        
-            <ul id="menu" class="list-group sticky-top sticky-offset p-5">
-              <li><a href="#domain">Setting up the domain and the servers</a></li>
-              <li><a href="#ssh">Talking to the servers</a></li>
-              <li><a href="#sso">Keycloak as my SSO solution</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-6 col-sm-12">
-            <p>Couple of months ago, when I was sharing a car to work with seven or eight more people, I considered to implement
-                some kind of application to decide who should be driving his/her car each of the days. It seems somehow easy to decide it,
-                but when you are many people, some of them could take the day off at work, get sick, even some of them don't have a car...
-                There are many cases to take into account, so it deserves having a program to make the choice for us. So let's do it!
-            </p>
-            <p id="domain" class="h4">Setting up the domain and the servers</p>
-            <p>Well, I decided to go with the infrastructure firstly. 
-                It might sound a bit weird, but having spent the last years mostly as a web developer, 
-                I had never dealt with hosting/domain administration myself before, so it was the perfect time to start with it.
-                I decided to go with the <a href="https://www.ovh.com">OVH provider</a>, so I signed up in their site to set up my domain:
-            </p>
-            <a href="images/domain.png">
-              <img src="images/domain.png" class="img-thumbnail p-2">
-            </a>
-            <p>Once having my domain, the next step was to order the servers. Since the very beginning I was planning a simple architecture configuration, 
-              which involves two servers, one would be for the SSO (Single Sign On) server and the other for the application itself. 
-              OVH provides virtual servers at a very affordable price, so I chose the cheapest plan, with 1 virtual core and 2 GB of RAM, 
-              considering that the traffic won't be too high, that should be enough to fulfill my needs. The OS I chose was Ubuntu Server 18.04.</p>
-            <p>Then I had the domain and the servers, I want the servers to have names in that domain. OVH gives those ugly default names to the servers, so I set up two subdomains
-              into my main domain, which are auth.quienconduce.com for the SSO server and www.quienconduce.com for my application. Those names are registered as
-              <a href="https://en.wikipedia.org/wiki/CNAME_record">CNAME DNS records</a> and targeted to the OVH virtual server names.
-            </p>
-            <p>Since I wanted my application to have a professional appearance, I also bought a mail server service for my domain. The cheapest OVH fares offer up to five accounts, which
-              seems more than enough for what I need. This will be the mail server for sending the mail notifications for the users Sign-up process and mail notifications:
-            </p>
-            <a href="images/mailing.png">
-              <img src="images/mailing.png" class="img-thumbnail p-2">
-            </a>
-            <p>Apart from this, I also wanted the main domain name
-              to redirect to my application. This means, redirect quienconduce.com requests to https://www.quienconduce.com, so I set up a
-              <a href="https://en.wikipedia.org/wiki/CNAME_record">permanent visible redirection</a> for this, returning the 301 HTTP code as a response 
-              and pointing to my application url when requested. This is the whole picture of my redirections, 
-              including the ones for the mail server and for the database management of each of the applications, which is web based and I will explain later on:
-            </p>
-            <a href="images/redirections.png">
-              <img src="images/redirections.png" class="img-thumbnail p-2">
-            </a>
-            <p id="ssh" class="h4">Talking to the servers</p>
-            <p>I'm using Linux Mint at home, where SSH client package is already installed, so connecting to the servers is a one liner such as:<pre><code>> ssh root@www.quienconduce.com</code></pre> 
-            </p><p>Anyway,
-              keep in mind that using the root user directly isn't advisable, so better create a standard user and add it to the sudoers group with these steps:<pre><code>> adduser aritz
-> usermod -aG sudo aritz</code></pre></p><p>
-Then log in with the standard user and use <span class="font-weight-bold">sudo</span> when required:
-<pre><code>> ssh aritz@www.quienconduce.com</code></pre>
-            </p>
-            <p id="sso" class="h4">Keycloak as my SSO solution</p>
-            <p><a href="https://www.keycloak.org/">Keycloak</a> is a Single Sign On solution brought by Red Hat, which provides:
-              <ul>
-                <li>User Management</li>
-                <li><a href="https://oauth.net/">OAuth flow</a> implementations</li>
-                <li>High compatibility with the Java Spring Framework</li>
-              </ul>
-              The main advantage of using an already built open source product for securizing any application is that there are many people working on it, who are considered to have
-              more expertise than myself or any full stack focused programmer in the security field. The IT security by itself is a complex subject, so better use already available libs/software, 
-              as long as they are backed by trusted companies/comunity.
-            </p>
-            <p>Since I've used Docker for containerizing many of the applications that I have made, this was the choice for me this time too.</p>
-          </div>
-          <div class="col-lg-3"></div>
+  <div class="container-fluid p-3">
+    <div class="row">
+      <div class="sidebar-expanded col-lg-3 d-none d-md-block">
+        <ul id="menu" class="list-group sticky-top sticky-offset p-5">
+          <li><a href="#architecture">The architecture</a></li>
+          <li><a href="#domain">Domain and hosting</a></li>
+          <li><a href="#ssh">Talking to the servers</a></li>
+          <li><a href="#sso">Keycloak as my SSO solution</a></li>
+          <li><a href="#db-client">Managing the database through a web-based client</a></li>
+        </ul>
       </div>
+      <div class="col-lg-6 col-sm-12">
+        <p>Last year, when I was sharing a car to work with seven or eight more people, I considered to implement
+          some kind of application to decide who should be driving his/her car each of the days. It seems somehow easy
+          to decide it,
+          but when you are many people, some of them could take the day off at work, get sick, even some of them don't
+          have a car...
+          There are many cases to take into account, so it deserves having a program to make the choice for us. So let's
+          start planning it!
+        </p>
+        <p id="architecture" class="h4">The architecture</p>
+        <p>Since the very beginning I've thought of two different servers, one will host the Single Sign On (SSO) solution
+          (<a href="https://www.keycloak.org/">Keycloak</a> in my case) and the other one
+          will be for the application itself. Since I'm planning to build my application using <a href="https://spring.io/projects/spring-boot">Spring Boot</a> and 
+          it already has wide Oauth2 - Open Id Connect support, the communication between the servers is done almost seamlessly.
+        </p>
+        <p>
+          In summary, I'll be running <a href="https://www.docker.com/">Docker</a> in both of the servers, using it's 
+          <a href="https://docs.docker.com/compose/">Docker Compose</a> tool to set up a basic orchestration in each of them. The SSO server 
+          will have a MariaDb database instance where Keycloak persists its data. Also a web based DB admin tool such as 
+          <a href="https://www.phpmyadmin.net/">PhpMyAdmin</a> will be available, in order to 
+          provide Db management from any device. The HTTP requests from the outside world will be made through a <a href="https://www.nginx.com/">Nginx server</a> 
+          acting as a reverse proxy, managing the SSL certificates to encrypt the communication. The second server containing my own application happens to be
+          almost the same in architectural means.
+        </p>
+        <a href="images/architecture.png">
+          <img src="images/architecture.png" class="img-thumbnail p-2">
+        </a>
+        <p id="domain" class="h4">Domain and hosting</p>
+        <p>Well, I decided to go with the infrastructure firstly.
+          It might sound a bit weird, but having spent the last years mostly as a web developer,
+          I had never dealt with hosting/domain administration myself before, so it was the perfect time to start with
+          it!
+          I chose the <a href="https://www.ovh.com">OVH provider</a>, so I signed up in their site to set
+          up my domain:
+        </p>
+        <a href="images/domain.png">
+          <img src="images/domain.png" class="img-thumbnail p-2">
+        </a>
+        <p>The next step was to order the servers,
+          OVH provides virtual servers at a very affordable price, so I chose the cheapest plan, with 1 virtual core and
+          2 GB of RAM,
+          considering that the traffic won't be too high, that should be enough to fulfill my needs. The OS I chose was
+          Ubuntu Server 18.04.</p>
+        <p>Once I had the domain and the servers, I wanted the servers to have names in that domain: I set up two subdomains
+          into my main domain, which are auth.quienconduce.com for the SSO server and www.quienconduce.com for my
+          application. Those names are registered as
+          <a href="https://en.wikipedia.org/wiki/CNAME_record">CNAME DNS records</a> and mapped to the OVH virtual
+          server names.
+        </p>
+        <p>Since I wanted my application to look a bit of professional, I also bought a mail service for my
+          domain. The cheapest OVH fares offers up to five accounts, which
+          seemed more than enough for what I need. This will be the mail server for sending the e-mail messages for
+          the users Sign Up process and notifications:
+        </p>
+        <a href="images/mailing.png">
+          <img src="images/mailing.png" class="img-thumbnail p-2">
+        </a>
+        <p>Apart from this, I also wanted the main domain name
+          to redirect to my application. This means, redirect quienconduce.com requests to https://www.quienconduce.com,
+          so I set up a
+          <a href="https://en.wikipedia.org/wiki/CNAME_record">permanent visible redirection</a> for this, returning the
+          301 HTTP code as a response
+          and pointing to my application url when requested. This is the whole picture of my redirections,
+          including the ones for the mail server and all the applications:
+        </p>
+        <a href="images/redirections.png">
+          <img src="images/redirections.png" class="img-thumbnail p-2">
+        </a>
+        <p id="ssh" class="h4">Talking to the servers</p>
+        <p>I'm using Linux Mint at home, where SSH client package is already installed, so connecting to the servers is
+          a one liner such as:
+          <pre><code>> ssh root@www.quienconduce.com</code></pre>
+        </p>
+        <p>Anyway,
+          keep in mind that using the root user directly isn't advisable, so better create a standard user and add it to
+          the sudoers group with these steps:
+          <pre><code>> adduser aritz
+> usermod -aG sudo aritz</code></pre>
+        </p>
+        <p>
+          Then log in with the standard user and use <span class="font-weight-bold">sudo</span> when required:
+          <pre><code>> ssh aritz@www.quienconduce.com</code></pre>
+        </p>
+        <p id="sso" class="h4">Keycloak as my SSO solution</p>
+        <p>Keycloak is a Single Sign On solution brought by Red Hat, which
+          provides:
+          <ul>
+            <li>User Management</li>
+            <li><a href="https://oauth.net/">OAuth flow</a> implementations, including <a href="https://openid.net/connect/">OpenId Connect</a> support</li>
+            <li>High compatibility with the Java Spring Framework</li>
+          </ul>
+          The main advantage of using an already built open source product for securizing any application is that there
+          are many people working on it, who are considered to have
+          more expertise in the security field than myself or any full stack focused programmer. The IT security by
+          itself is a complex subject, so better use already available libs/software,
+          as long as they are backed by trusted companies - communities.
+        </p>
+        <p>Keycloak is compatible with some of
+          the most popular database engines, but I decided myself to use MariaDb, instead of relying in the built in H2
+          database, which is not advisable for production stages. Here it is my
+          <span class="font-italic">docker-compose.yml</span> configuration:
+        </p>
+        <pre><code>version: '2'
+  services:
+    mariadb:
+      ports:
+        - '127.0.0.1:3306:3306'
+      image: mariadb:10.4.5-bionic
+      container_name: mariadb
+      volumes:
+        - /home/aritz/mysql:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: keycloak
+        MYSQL_USER: keycloak
+        MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    keycloak:
+      image: jboss/keycloak
+      container_name: keycloak
+      environment:
+        DB_VENDOR: MARIADB
+        DB_ADDR: mariadb
+        DB_DATABASE: keycloak
+        DB_USER: root
+        DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        KEYCLOAK_USER: keycloak
+        KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+        PROXY_ADDRESS_FORWARDING: 'true'
+      ports:
+        - 8080:8080
+      depends_on:
+        - mariadb
+      restart: on-failure</code></pre>
+        <p>Basically, this downloads the images of MariaDB and Keycloak from the <a
+            href="https://hub.docker.com/">Docker Hub</a> and launches them in two containers, so as the Keycloak
+          instance connects to the MariaDb database. Couple of security related things here, in the MariaDb container
+          the port 3306 from the host is binded to the 3306 of the container, but
+          apart from this I added the localhost address before, meaning that the DB server will only be available in the
+          host machine. Also the passwords are set in Docker environment variables, which
+          are grabbed from an <span class="font-italic">.env</span> file in the same directory of 
+          the Compose file, thus not being uploaded to the source control.</p>
+        <p id="db-client" class="h4">Managing the database through a web-based client</p>
+        <p>Accessing the database through a web based client is quite convenient, in order to be able to make changes
+          from any browser. The most popular tool for mysql/mariadb administration
+          is phpmyadmin, so let's configure it in our Docker compose file:
+        </p>
+        <pre><code>phpmyadmin:
+  image: phpmyadmin/phpmyadmin
+  links:
+    - mariadb:db
+  ports:
+    - 8081:80
+  environment:
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    PMA_ABSOLUTE_URI: https://db.auth.quienconduce.com</code></pre>
+        <p>With the given configuration, we've got three applications running: Mariadb, bound in the 3306 port, Keycloak
+          running in 8080 and PhpMyAdmin in 8081. But I would like to give names to
+          these services to be publicly accessible. Keycloak should be accessible by https://auth.quienconduce.com and
+          PhpMyAdmin through https://db.auth.quienconduce.com, as I have already defined
+          in my DNS registries. This task can be done configuring a reverse proxy at the top of them, so I decided to
+          use <a href="https://www.nginx.com/">Nginx</a> for this:
+        </p>
+        <pre><code>nginx:
+  image: valian/docker-nginx-auto-ssl
+  restart: on-failure
+  ports:
+    - 80:80
+    - 443:443
+  volumes:
+    - ssl_data:/etc/resty-auto-ssl
+    - /home/aritz/nginx:/etc/nginx/conf.d
+  links:
+    - phpmyadmin:phpmyadmin
+  environment:
+    ALLOWED_DOMAINS: 'quienconduce.com'</code></pre>
+        <p>This isn't the standard Nginx docker container, though. It is a customized Docker image which allows to
+          integrate automatic SSL certificate generation for our site
+          (thanks <a href="https://github.com/Valian/docker-nginx-auto-ssl">@Valian</a> ;-)). We need to configure two
+          Docker volumes for this, the one needed for Resty Ssl data and
+          the other for the Nginx config itself. In our host machine, let's place two configuration files in
+          <span class="font-italic">/home/aritz/nginx</span>:</p>
+        <pre><code>server {
+  listen 443 ssl;
+  server_name auth.quienconduce.com;
+
+  include resty-server-https.conf;
+
+  location / {
+    proxy_pass http://keycloak:8080;
+    add_header Access-Control-Allow-Origin https://auth.quienconduce.com;
+    
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}</code></pre>
+        <p>This will make Nginx proxy-pass the requests made to https://auth.quienconduce.com to the keycloak server,
+          including the request headers defined.</p>
+      </div>
+      <div class="col-lg-3"></div>
     </div>
+  </div>
 </body>
 
 </html>

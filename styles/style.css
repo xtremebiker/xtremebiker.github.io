@@ -19,7 +19,7 @@ pre {
     background-color: black;
     border-radius: 5px;
     padding: 5px;
-    overflow-x:scroll;
+    overflow-x:auto;
 }
 
 pre code {
@@ -29,4 +29,8 @@ pre code {
 img, p {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+p, a {
+    font-size: 18px;
 }
