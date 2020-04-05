@@ -1,0 +1,130 @@
+
+; <<>> DiG 9.11.3-1ubuntu1.11-Ubuntu <<>> making.quienconduce.com +nostats +nocomments +nocmd IN A 3592 IN CNAME xtremebiker.github.io. 43192 IN CNAME GITHUB-PAGES-SERVER . . 22 IN A 192.0.2.1
+;; global options: +cmd
+;making.quienconduce.com.	IN	A
+making.quienconduce.com. 2901	IN	CNAME	xtremebiker.github.io.
+xtremebiker.github.io.	2901	IN	A	185.199.110.153
+xtremebiker.github.io.	2901	IN	A	185.199.109.153
+xtremebiker.github.io.	2901	IN	A	185.199.111.153
+xtremebiker.github.io.	2901	IN	A	185.199.108.153
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 51922
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;3592.				IN	CNAME
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 33
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 32675
+;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;xtremebiker.github.io.		IN	A
+
+;; ANSWER SECTION:
+xtremebiker.github.io.	2901	IN	A	185.199.110.153
+xtremebiker.github.io.	2901	IN	A	185.199.109.153
+xtremebiker.github.io.	2901	IN	A	185.199.111.153
+xtremebiker.github.io.	2901	IN	A	185.199.108.153
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 114
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 44611
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;43192.				IN	CNAME
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 34
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 16428
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;GITHUB-PAGES-SERVER.		IN	A
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 48
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 23381
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;.				IN	A
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 28
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 7255
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;.				IN	A
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 28
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 63260
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;22.				IN	A
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 31
+
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 34265
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;192.0.2.1.			IN	A
+
+;; ANSWER SECTION:
+192.0.2.1.		0	IN	A	192.0.2.1
+
+;; Query time: 41 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53)
+;; WHEN: Sun Apr 05 21:15:04 CEST 2020
+;; MSG SIZE  rcvd: 54
+
