@@ -9,6 +9,7 @@
   <meta name="theme-color" content="#272626">
   <!-- iOS Safari -->
   <meta name="apple-mobile-web-app-status-bar-style" content="#272626">
+  <link rel='shortcut icon' type='image/x-icon' href='images/favicon.ico' />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
     integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
   <link rel="stylesheet" href="styles/style.css">
@@ -29,6 +30,10 @@
           <li><a href="#ssh">Talking to the servers</a></li>
           <li><a href="#sso">Keycloak as my SSO solution</a></li>
           <li><a href="#db-client">Managing the database through a web-based client</a></li>
+          <li><a href="#nginx">Nginx proxy</a></li>
+          <li><a href="#run-sso">Running the SSO server</a></li>
+          <li><a href="#continuous-integration">Configuring the continuous integration in Gitlab</a></li>
+          <li><a href="#greetings">Greetings</a></li>
         </ul>
       </div>
       <div class="col-lg-6 col-sm-12">
@@ -41,41 +46,51 @@
           start planning it!
         </p>
         <p id="architecture" class="h4">The architecture</p>
-        <p>Since the very beginning I've thought of two different servers, one will host the Single Sign On (SSO) solution
-          (<a href="https://www.keycloak.org/">Keycloak</a> in my case) and the other one
-          will be for the application itself. Since I'm planning to build my application using <a href="https://spring.io/projects/spring-boot">Spring Boot</a> and 
-          it already has wide Oauth2 - Open Id Connect support, the communication between the servers is done almost seamlessly.
+        <p>Since the very beginning I've thought of two different servers, one to host the Single Sign On (SSO)
+          solution
+          (<a href="https://www.keycloak.org/">Keycloak</a> in my case) and the other one for the application itself.
+          Since I planned to build my application using <a href="https://spring.io/projects/spring-boot">Spring Boot</a>
+          and
+          it already has wide Oauth2 - Open Id Connect support, the communication between the servers is done almost
+          seamlessly.
         </p>
         <p>
-          In summary, I'll be running <a href="https://www.docker.com/">Docker</a> in both of the servers, using it's 
-          <a href="https://docs.docker.com/compose/">Docker Compose</a> tool to set up a basic orchestration in each of them. The SSO server 
-          will have a MariaDb database instance where Keycloak persists its data. Also a web based DB admin tool such as 
-          <a href="https://www.phpmyadmin.net/">PhpMyAdmin</a> will be available, in order to 
-          provide Db management from any device. The HTTP requests from the outside world will be made through a <a href="https://www.nginx.com/">Nginx server</a> 
-          acting as a reverse proxy, managing the SSL certificates to encrypt the communication. The second server containing my own application happens to be
-          almost the same in architectural means.
+          In summary, I'll be running <a href="https://www.docker.com/">Docker</a> in both of the servers, using it's
+          <a href="https://docs.docker.com/compose/">Docker Compose</a> tool to set up a basic orchestration in each of
+          them. The SSO server
+          will have a MariaDb database instance where Keycloak persists its data. Also a web based DB admin tool such as
+          <a href="https://www.phpmyadmin.net/">PhpMyAdmin</a> will be available, in order to
+          provide Db management from any device. The HTTP requests from the outside world will be made through a <a
+            href="https://www.nginx.com/">Nginx server</a>
+          acting as a reverse proxy, managing the SSL certificates to encrypt the communication. The second server
+          containing my own application happens to be
+          almost the identical in architectural means.
         </p>
-        <a href="images/architecture.png">
-          <img src="images/architecture.png" class="img-thumbnail p-2">
-        </a>
+        <div class="text-center">
+          <a href="images/architecture.png">
+            <img src="images/architecture.png" class="img-thumbnail p-2">
+          </a>
+        </div>
         <p id="domain" class="h4">Domain and hosting</p>
         <p>Well, I decided to go with the infrastructure firstly.
           It might sound a bit weird, but having spent the last years mostly as a web developer,
           I had never dealt with hosting/domain administration myself before, so it was the perfect time to start with
           it!
           I chose the <a href="https://www.ovh.com">OVH provider</a>, so I signed up in their site to set
-          up my domain:
+          up my own domain:
         </p>
         <a href="images/domain.png">
           <img src="images/domain.png" class="img-thumbnail p-2">
         </a>
-        <p>The next step was to order the servers,
+        <p>The next step was to order the servers:
           OVH provides virtual servers at a very affordable price, so I chose the cheapest plan, with 1 virtual core and
           2 GB of RAM,
-          considering that the traffic won't be too high, that should be enough to fulfill my needs. The OS I chose was
+          considering that the traffic won't be too high, this should be enough to fulfill my needs. The OS I chose was
           Ubuntu Server 18.04.</p>
-        <p>Once I had the domain and the servers, I wanted the servers to have names in that domain: I set up two subdomains
-          into my main domain, which are auth.quienconduce.com for the SSO server and www.quienconduce.com for my
+        <p>Once I had the domain and the servers, I wanted the servers to have names in that domain: I set up two
+          subdomains
+          into my main domain, which are <span class="font-italic">auth.quienconduce.com</span> for the SSO server and
+          <span class="font-italic">www.quienconduce.com</span> for my
           application. Those names are registered as
           <a href="https://en.wikipedia.org/wiki/CNAME_record">CNAME DNS records</a> and mapped to the OVH virtual
           server names.
@@ -89,7 +104,8 @@
           <img src="images/mailing.png" class="img-thumbnail p-2">
         </a>
         <p>Apart from this, I also wanted the main domain name
-          to redirect to my application. This means, redirect quienconduce.com requests to https://www.quienconduce.com,
+          to redirect to my application. This means, redirect <span class="font-italic">quienconduce.com requests
+            to</span> <span class="font-italic">https://www.quienconduce.com</span>,
           so I set up a
           <a href="https://en.wikipedia.org/wiki/CNAME_record">permanent visible redirection</a> for this, returning the
           301 HTTP code as a response
@@ -100,7 +116,8 @@
           <img src="images/redirections.png" class="img-thumbnail p-2">
         </a>
         <p id="ssh" class="h4">Talking to the servers</p>
-        <p>I'm using Linux Mint at home, where SSH client package is already installed, so connecting to the servers is
+        <p>I'm using Linux Mint in my PC at home, where the SSH client package is already installed, so connecting to
+          the servers is
           a one liner such as:
           <pre><code>> ssh root@www.quienconduce.com</code></pre>
         </p>
@@ -116,13 +133,15 @@
         </p>
         <p id="sso" class="h4">Keycloak as my SSO solution</p>
         <p>Keycloak is a Single Sign On solution brought by Red Hat, which
-          provides:
-          <ul>
-            <li>User Management</li>
-            <li><a href="https://oauth.net/">OAuth flow</a> implementations, including <a href="https://openid.net/connect/">OpenId Connect</a> support</li>
-            <li>High compatibility with the Java Spring Framework</li>
-          </ul>
-          The main advantage of using an already built open source product for securizing any application is that there
+          provides:</p>
+        <ul>
+          <li>User Management</li>
+          <li><a href="https://oauth.net/">OAuth flow</a> implementations, including <a
+              href="https://openid.net/connect/">OpenId Connect</a> support</li>
+          <li>High compatibility with the Java Spring Framework</li>
+          <li>"Skinnable" login page</li>
+        </ul>
+        <p>The main advantage of using an already built open source product for securizing any application is that there
           are many people working on it, who are considered to have
           more expertise in the security field than myself or any full stack focused programmer. The IT security by
           itself is a complex subject, so better use already available libs/software,
@@ -165,16 +184,19 @@
         - mariadb
       restart: on-failure</code></pre>
         <p>Basically, this downloads the images of MariaDB and Keycloak from the <a
-            href="https://hub.docker.com/">Docker Hub</a> and launches them in two containers, so as the Keycloak
-          instance connects to the MariaDb database. Couple of security related things here, in the MariaDb container
+            href="https://hub.docker.com/">Docker Hub</a> and launches them in two containers, so as the SSO
+          instance connects to the database. Also a user named "keycloak" will be created in the SSO server.</p>
+        <p>Couple of security related things here, in the MariaDb container
           the port 3306 from the host is binded to the 3306 of the container, but
           apart from this I added the localhost address before, meaning that the DB server will only be available in the
           host machine. Also the passwords are set in Docker environment variables, which
-          are grabbed from an <span class="font-italic">.env</span> file in the same directory of 
+          are grabbed from an <span class="font-italic">.env</span> file in the same directory of
           the Compose file, thus not being uploaded to the source control.</p>
+
         <p id="db-client" class="h4">Managing the database through a web-based client</p>
-        <p>Accessing the database through a web based client is quite convenient, in order to be able to make changes
-          from any browser. The most popular tool for mysql/mariadb administration
+        <p>Having a web based client available is quite convenient, in order to be able to make changes
+          from any browser. If we want to use a more advanced desktop client, we can configure SSH tunneling later on.
+          The most popular tool for mysql/mariadb administration
           is phpmyadmin, so let's configure it in our Docker compose file:
         </p>
         <pre><code>phpmyadmin:
@@ -186,11 +208,13 @@
   environment:
     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     PMA_ABSOLUTE_URI: https://db.auth.quienconduce.com</code></pre>
-        <p>With the given configuration, we've got three applications running: Mariadb, bound in the 3306 port, Keycloak
+        <p id="nginx" class="h4">Nginx proxy</p>
+        <p>With the given configuration, I've got three applications running: Mariadb, bound in the 3306 port, Keycloak
           running in 8080 and PhpMyAdmin in 8081. But I would like to give names to
-          these services to be publicly accessible. Keycloak should be accessible by https://auth.quienconduce.com and
-          PhpMyAdmin through https://db.auth.quienconduce.com, as I have already defined
-          in my DNS registries. This task can be done configuring a reverse proxy at the top of them, so I decided to
+          these services to be publicly accessible. Keycloak should be accessible by <span
+            class="font-italic">https://auth.quienconduce.com</span> and
+          PhpMyAdmin in <span class="font-italic">https://db.auth.quienconduce.com</span>, as I have already defined
+          in my DNS registries. This task can be done configuring a reverse proxy at the top of them, so I chose to
           use <a href="https://www.nginx.com/">Nginx</a> for this:
         </p>
         <pre><code>nginx:
@@ -204,11 +228,13 @@
     - /home/aritz/nginx:/etc/nginx/conf.d
   links:
     - phpmyadmin:phpmyadmin
+    - keycloak:keycloak
   environment:
     ALLOWED_DOMAINS: 'quienconduce.com'</code></pre>
-        <p>This isn't the standard Nginx docker container, though. It is a customized Docker image which allows to
+        <p>This isn't the standard Nginx docker container, but a customized Docker image which allows to
           integrate automatic SSL certificate generation for our site
-          (thanks <a href="https://github.com/Valian/docker-nginx-auto-ssl">@Valian</a> ;-)). We need to configure two
+          (thanks <a href="https://github.com/Valian/docker-nginx-auto-ssl">@Valian</a> ;-)).
+          We need to configure two
           Docker volumes for this, the one needed for Resty Ssl data and
           the other for the Nginx config itself. In our host machine, let's place two configuration files in
           <span class="font-italic">/home/aritz/nginx</span>:</p>
@@ -219,17 +245,65 @@
   include resty-server-https.conf;
 
   location / {
-    proxy_pass http://keycloak:8080;
-    add_header Access-Control-Allow-Origin https://auth.quienconduce.com;
-    
+    proxy_pass http://keycloak:8080;  
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 }</code></pre>
-        <p>This will make Nginx proxy-pass the requests made to https://auth.quienconduce.com to the keycloak server,
-          including the request headers defined.</p>
+
+        <pre><code>server {
+  listen 443 ssl;
+  server_name db.auth.quienconduce.com;
+
+  include resty-server-https.conf;
+
+  location / {
+    proxy_pass http://phpmyadmin;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}</code></pre>
+        <p>This will make Nginx proxy-pass the requests made to <span
+            class="font-italic">https://auth.quienconduce.com</span> and <span
+            class="font-italic">https://db.auth.quienconduce.com</span> to the keycloak and PhpMyAdmin servers,
+          including the request headers defined. Here I use the Docker aliases of the services to specify the host
+          for the <span class="font-italic">proxy_pass</span> rule. However, for some reason I had to manually specify
+          the
+          port for Keycloak, Nginx wasn't able to find it otherwise.</p>
+        <p id="run-sso" class="h4">Running the SSO server</p>
+        <p>After the Docker Compose file is configured, we just have to run this command to have everything up and
+          running:</p>
+        <pre><code>sudo docker-compose up -d</code></pre>
+        <p>After this, we can see that both SSO and DB Admin servers are accessible through their DNS names in a secure
+          manner:</p>
+        <div class="text-center">
+          <a href="images/keycloak-cert.png">
+            <img src="images/keycloak-cert.png" class="img-thumbnail p-2">
+          </a>
+          <a href="images/phpmyadmin-cert.png">
+            <img src="images/phpmyadmin-cert.png" class="img-thumbnail p-2">
+          </a>
+        </div>
+        <p>This is the list of running containers, with its names and port mappings:</p>
+        <pre><code class="custom-scroll">> sudo docker ps
+CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS              PORTS                                      NAMES
+f1fb4e7644b5        valian/docker-nginx-auto-ssl   "/entrypoint.sh /usr…"   33 minutes ago      Up 31 minutes       0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp   ubuntu_nginx_1
+05744b919286        jboss/keycloak                 "/opt/jboss/tools/do…"   31 hours ago        Up 31 minutes       0.0.0.0:8080->8080/tcp, 8443/tcp           keycloak
+573233b4d653        phpmyadmin/phpmyadmin          "/docker-entrypoint.…"   3 months ago        Up 31 minutes       0.0.0.0:8081->80/tcp                       ubuntu_phpmyadmin_1
+c80f4632d7cc        mariadb:10.4.5-bionic          "docker-entrypoint.s…"   8 months ago        Up 31 minutes       127.0.0.1:3306->3306/tcp                   mariadb</code></pre>
+        <p id="continuous-integration" class="h4">Configuring the continuous integration in Gitlab</p>
+        <p id="greetings" class="h4">Greetings</p>
+        <p>Last but not least, many thanks to @IreneUson who spent some time designing the logo for the website. Good
+          job!</p>
+        <div class="text-center">
+          <a href="images/app-logo.png">
+            <img src="images/app-logo.png" class="img-thumbnail p-2">
+          </a>
+        </div>
       </div>
       <div class="col-lg-3"></div>
     </div>

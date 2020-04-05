@@ -19,7 +19,9 @@ pre {
     background-color: black;
     border-radius: 5px;
     padding: 5px;
-    overflow-x:auto;
+    overflow-x: auto;
+    scrollbar-color: #f700ff #444343;
+    scrollbar-width: thin;
 }
 
 pre code {
@@ -31,6 +33,28 @@ img, p {
     margin-bottom: 10px;
 }
 
-p, a {
+p, a, li {
     font-size: 18px;
+}
+
+#menu>li {
+    margin-bottom: 5px;
+}
+
+/** Webkit based custom code scrollbars **/
+pre::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+    background: #444343;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background: #f700ff;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+    background: #f700ff;
 }
