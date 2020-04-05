@@ -17,7 +17,7 @@ body{
 
 pre {
     background-color: black;
-    border-radius: 5px;
+    border-radius: .25rem;
     padding: 5px;
     overflow-x: auto;
     scrollbar-color: #f700ff #444343;
@@ -39,6 +39,11 @@ p, a, li {
 
 #menu>li {
     margin-bottom: 5px;
+}
+
+.img-fluid {
+    padding: 2px;
+    border-radius: .25rem;
 }
 
 /** Webkit based custom code scrollbars **/

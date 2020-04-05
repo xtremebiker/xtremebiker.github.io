@@ -32,7 +32,9 @@
           <li><a href="#db-client">Managing the database through a web-based client</a></li>
           <li><a href="#nginx">Nginx proxy</a></li>
           <li><a href="#run-sso">Running the SSO server</a></li>
-          <li><a href="#continuous-integration">Configuring the continuous integration in Gitlab</a></li>
+          <li><a href="#backups">Configuring the DB backups</a></li>
+          <li><a href="#jhipster">Fast web application generation using jHipster</a></li>
+          <li><a href="#continuous-integration">Configuring the continuous integration in gitlab</a></li>
           <li><a href="#greetings">Greetings</a></li>
         </ul>
       </div>
@@ -48,27 +50,27 @@
         <p id="architecture" class="h4">The architecture</p>
         <p>Since the very beginning I've thought of two different servers, one to host the Single Sign On (SSO)
           solution
-          (<a href="https://www.keycloak.org/">Keycloak</a> in my case) and the other one for the application itself.
-          Since I planned to build my application using <a href="https://spring.io/projects/spring-boot">Spring Boot</a>
+          (<a href="https://www.keycloak.org/">keycloak</a> in my case) and the other one for the application itself.
+          Since I planned to build my application using <a href="https://spring.io/projects/spring-boot">spring boot</a>
           and
           it already has wide Oauth2 - Open Id Connect support, the communication between the servers is done almost
           seamlessly.
         </p>
         <p>
-          In summary, I'll be running <a href="https://www.docker.com/">Docker</a> in both of the servers, using it's
-          <a href="https://docs.docker.com/compose/">Docker Compose</a> tool to set up a basic orchestration in each of
+          In summary, I'll be running <a href="https://www.docker.com/">docker</a> in both of the servers, using it's
+          <a href="https://docs.docker.com/compose/">docker compose</a> tool to set up a basic orchestration in each of
           them. The SSO server
-          will have a MariaDb database instance where Keycloak persists its data. Also a web based DB admin tool such as
-          <a href="https://www.phpmyadmin.net/">PhpMyAdmin</a> will be available, in order to
-          provide Db management from any device. The HTTP requests from the outside world will be made through a <a
-            href="https://www.nginx.com/">Nginx server</a>
+          will have a mariadb database instance where keycloak persists its data. Also a web based DB admin tool such as
+          <a href="https://www.phpmyadmin.net/">phpmyadmin</a> will be available, in order to
+          provide DB management from any device. The HTTP requests from the outside world will be made through a <a
+            href="https://www.nginx.com/">nginx server</a>
           acting as a reverse proxy, managing the SSL certificates to encrypt the communication. The second server
           containing my own application happens to be
           almost the identical in architectural means.
         </p>
         <div class="text-center">
           <a href="images/architecture.png">
-            <img src="images/architecture.png" class="img-thumbnail p-2">
+            <img src="images/architecture.png" class="img-fluid img-thumbnail">
           </a>
         </div>
         <p id="domain" class="h4">Domain and hosting</p>
@@ -80,7 +82,7 @@
           up my own domain:
         </p>
         <a href="images/domain.png">
-          <img src="images/domain.png" class="img-thumbnail p-2">
+          <img src="images/domain.png" class="img-fluid">
         </a>
         <p>The next step was to order the servers:
           OVH provides virtual servers at a very affordable price, so I chose the cheapest plan, with 1 virtual core and
@@ -101,7 +103,7 @@
           the users Sign Up process and notifications:
         </p>
         <a href="images/mailing.png">
-          <img src="images/mailing.png" class="img-thumbnail p-2">
+          <img src="images/mailing.png" class="img-fluid">
         </a>
         <p>Apart from this, I also wanted the main domain name
           to redirect to my application. This means, redirect <span class="font-italic">quienconduce.com requests
@@ -113,7 +115,7 @@
           including the ones for the mail server and all the applications:
         </p>
         <a href="images/redirections.png">
-          <img src="images/redirections.png" class="img-thumbnail p-2">
+          <img src="images/redirections.png" class="img-fluid">
         </a>
         <p id="ssh" class="h4">Talking to the servers</p>
         <p>I'm using Linux Mint in my PC at home, where the SSH client package is already installed, so connecting to
@@ -131,14 +133,14 @@
           Then log in with the standard user and use <span class="font-weight-bold">sudo</span> when required:
           <pre><code>> ssh aritz@www.quienconduce.com</code></pre>
         </p>
-        <p id="sso" class="h4">Keycloak as my SSO solution</p>
+        <p id="sso" class="h4">keycloak as my SSO solution</p>
         <p>Keycloak is a Single Sign On solution brought by Red Hat, which
           provides:</p>
         <ul>
           <li>User Management</li>
           <li><a href="https://oauth.net/">OAuth flow</a> implementations, including <a
               href="https://openid.net/connect/">OpenId Connect</a> support</li>
-          <li>High compatibility with the Java Spring Framework</li>
+          <li>High compatibility with the java spring framework</li>
           <li>"Skinnable" login page</li>
         </ul>
         <p>The main advantage of using an already built open source product for securizing any application is that there
@@ -148,7 +150,7 @@
           as long as they are backed by trusted companies - communities.
         </p>
         <p>Keycloak is compatible with some of
-          the most popular database engines, but I decided myself to use MariaDb, instead of relying in the built in H2
+          the most popular database engines, but I decided myself to use mariadb, instead of relying in the built in H2
           database, which is not advisable for production stages. Here it is my
           <span class="font-italic">docker-compose.yml</span> configuration:
         </p>
@@ -183,21 +185,21 @@
       depends_on:
         - mariadb
       restart: on-failure</code></pre>
-        <p>Basically, this downloads the images of MariaDB and Keycloak from the <a
-            href="https://hub.docker.com/">Docker Hub</a> and launches them in two containers, so as the SSO
+        <p>Basically, this downloads the images of MariaDB and keycloak from the <a
+            href="https://hub.docker.com/">docker Hub</a> and launches them in two containers, so as the SSO
           instance connects to the database. Also a user named "keycloak" will be created in the SSO server.</p>
-        <p>Couple of security related things here, in the MariaDb container
+        <p>Couple of security related things here, in the mariadb container
           the port 3306 from the host is binded to the 3306 of the container, but
           apart from this I added the localhost address before, meaning that the DB server will only be available in the
-          host machine. Also the passwords are set in Docker environment variables, which
+          host machine. Also the passwords are set in docker environment variables, which
           are grabbed from an <span class="font-italic">.env</span> file in the same directory of
-          the Compose file, thus not being uploaded to the source control.</p>
+          the compose file, thus not being uploaded to the source control.</p>
 
         <p id="db-client" class="h4">Managing the database through a web-based client</p>
         <p>Having a web based client available is quite convenient, in order to be able to make changes
           from any browser. If we want to use a more advanced desktop client, we can configure SSH tunneling later on.
           The most popular tool for mysql/mariadb administration
-          is phpmyadmin, so let's configure it in our Docker compose file:
+          is phpmyadmin, so let's configure it in our docker compose file:
         </p>
         <pre><code>phpmyadmin:
   image: phpmyadmin/phpmyadmin
@@ -209,13 +211,13 @@
     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     PMA_ABSOLUTE_URI: https://db.auth.quienconduce.com</code></pre>
         <p id="nginx" class="h4">Nginx proxy</p>
-        <p>With the given configuration, I've got three applications running: Mariadb, bound in the 3306 port, Keycloak
-          running in 8080 and PhpMyAdmin in 8081. But I would like to give names to
-          these services to be publicly accessible. Keycloak should be accessible by <span
+        <p>With the given configuration, I've got three applications running: Mariadb, bound in the 3306 port, keycloak
+          running in 8080 and phpmyadmin in 8081. But I would like to give names to
+          these services to be publicly accessible. keycloak should be accessible by <span
             class="font-italic">https://auth.quienconduce.com</span> and
-          PhpMyAdmin in <span class="font-italic">https://db.auth.quienconduce.com</span>, as I have already defined
+          phpmyadmin in <span class="font-italic">https://db.auth.quienconduce.com</span>, as I have already defined
           in my DNS registries. This task can be done configuring a reverse proxy at the top of them, so I chose to
-          use <a href="https://www.nginx.com/">Nginx</a> for this:
+          use <a href="https://www.nginx.com/">nginx</a> for this:
         </p>
         <pre><code>nginx:
   image: valian/docker-nginx-auto-ssl
@@ -231,12 +233,12 @@
     - keycloak:keycloak
   environment:
     ALLOWED_DOMAINS: 'quienconduce.com'</code></pre>
-        <p>This isn't the standard Nginx docker container, but a customized Docker image which allows to
+        <p>This isn't the standard nginx docker container, but a customized docker image which allows to
           integrate automatic SSL certificate generation for our site
           (thanks <a href="https://github.com/Valian/docker-nginx-auto-ssl">@Valian</a> ;-)).
           We need to configure two
-          Docker volumes for this, the one needed for Resty Ssl data and
-          the other for the Nginx config itself. In our host machine, let's place two configuration files in
+          docker volumes for this, the one needed for resty ssl data and
+          the other for the nginx config itself. In our host machine, let's place two configuration files in
           <span class="font-italic">/home/aritz/nginx</span>:</p>
         <pre><code>server {
   listen 443 ssl;
@@ -267,25 +269,26 @@
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 }</code></pre>
-        <p>This will make Nginx proxy-pass the requests made to <span
+        <p>This will make nginx proxy-pass the requests made to <span
             class="font-italic">https://auth.quienconduce.com</span> and <span
-            class="font-italic">https://db.auth.quienconduce.com</span> to the keycloak and PhpMyAdmin servers,
-          including the request headers defined. Here I use the Docker aliases of the services to specify the host
+            class="font-italic">https://db.auth.quienconduce.com</span> to the keycloak and phpmyadmin servers,
+          including the request headers defined. Here I use the docker aliases of the services to specify the host
           for the <span class="font-italic">proxy_pass</span> rule. However, for some reason I had to manually specify
           the
-          port for Keycloak, Nginx wasn't able to find it otherwise.</p>
+          port for keycloak, nginx wasn't able to find it otherwise.</p>
         <p id="run-sso" class="h4">Running the SSO server</p>
-        <p>After the Docker Compose file is configured, we just have to run this command to have everything up and
+        <p>After the docker compose file is configured, we just have to run this command to have everything up and
           running:</p>
         <pre><code>sudo docker-compose up -d</code></pre>
-        <p>After this, we can see that both SSO and DB Admin servers are accessible through their DNS names in a secure
+        <p>After this, we can see that both SSO and database admin servers are accessible through their DNS names in a
+          secure
           manner:</p>
         <div class="text-center">
           <a href="images/keycloak-cert.png">
-            <img src="images/keycloak-cert.png" class="img-thumbnail p-2">
+            <img src="images/keycloak-cert.png" class="img-fluid">
           </a>
           <a href="images/phpmyadmin-cert.png">
-            <img src="images/phpmyadmin-cert.png" class="img-thumbnail p-2">
+            <img src="images/phpmyadmin-cert.png" class="img-fluid">
           </a>
         </div>
         <p>This is the list of running containers, with its names and port mappings:</p>
@@ -295,13 +298,89 @@ f1fb4e7644b5        valian/docker-nginx-auto-ssl   "/entrypoint.sh /usr…"   33
 05744b919286        jboss/keycloak                 "/opt/jboss/tools/do…"   31 hours ago        Up 31 minutes       0.0.0.0:8080->8080/tcp, 8443/tcp           keycloak
 573233b4d653        phpmyadmin/phpmyadmin          "/docker-entrypoint.…"   3 months ago        Up 31 minutes       0.0.0.0:8081->80/tcp                       ubuntu_phpmyadmin_1
 c80f4632d7cc        mariadb:10.4.5-bionic          "docker-entrypoint.s…"   8 months ago        Up 31 minutes       127.0.0.1:3306->3306/tcp                   mariadb</code></pre>
-        <p id="continuous-integration" class="h4">Configuring the continuous integration in Gitlab</p>
+        <p id="backups" class="h4">Configuring the DB backups</p>
+        <p>I wanted the DB to be backed up to some external site in case the server hard disk crashes or the information
+          is lost after some fatal failure. So I wrote an script which uses <a
+            href="https://github.com/rclone/rclone">rclone</a> and copies the dump of the database content
+          to my dropbox account:</p>
+        <pre><code>docker exec mariadb mysqldump -u user -pmypass keycloak --single-transaction > /home/aritz/auth.sql
+rclone --config="/home/aritz/.config/rclone/rclone.conf" copy /home/aritz/auth.sql dropbox:backups</code></pre>
+        <p>The rclone configuration file contains my dropbox account access token, so I set the script to run every
+          night in the crontab,
+          with the docker compose script configured to run in every reboot alongside:</p>
+        <pre><code>00 00 * * * /home/aritz/backup.sh  >> /var/log/backup.log 2>&1
+@reboot /home/aritz/docker-compose.sh   >> /var/log/docker-compose.log 2>&1</code></pre>
+        <p id="jhipster" class="h4">Fast web application generation using jHipster</p>
+        <p>Even if spring boot provides a great way to set up web applications in a breeze, I wanted to speed up the
+          process and
+          decided to use the <a href="https://www.jhipster.tech/">jHipster</a> application generator. This tool is
+          amazing since it lets you
+          design your own entity domain model and then generate both the backend code written in java - spring and the
+          front end using either Angular
+          or ReactJs: In my case, I chose Angular. This is a snapshot of the web entity generator:</p>
+        <div class="text-center">
+          <a href="images/jhipster-jdl.png">
+            <img src="images/jhipster-jdl.png" class="img-fluid">
+          </a>
+        </div>
+        <p id="continuous-integration" class="h4">Configuring the continuous integration in gitlab</p>
+        <p>After finishing the set up and checked that everything was compiling, I uploaded my git repo to gitlab. This
+          platform provides continuous integration
+          with pipelines for different stages, so it's quite handy for my project, even if I'm the only developer
+          working on it.</p>
+        <p>The stages defined in my pipeline
+          configuration file are build and test. Inside them, the maven and node docker images are used to build the
+          software and pass the test benchmarks, also
+          the dependencies are configured to be cached to speed up the pipeline process.
+          I want it to make the deployment in the future too, which basically generates the application
+          docker image which is uploaded to the docker hub.
+        </p>
+        <pre><code>stages:
+  - build
+  - test
+
+variables:
+  MAVEN_CLI_OPTS: '--batch-mode'
+  MAVEN_OPTS: '-Dmaven.repo.local=.m2/repository'
+
+cache:
+  paths:
+    - .m2/repository/
+    - target/
+    - node_modules/
+
+install_dependencies:
+  image: node:latest
+  stage: build
+  script:
+    - npm install
+  artifacts:
+    paths:
+      - node_modules/
+
+build:mvn:
+  image: maven:latest
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean compile
+
+test:mvn:
+  image: maven:latest
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS clean test
+
+test:npm:
+  image: node:latest
+  stage: test
+  script:
+    - npm test</code></pre>
         <p id="greetings" class="h4">Greetings</p>
         <p>Last but not least, many thanks to @IreneUson who spent some time designing the logo for the website. Good
           job!</p>
         <div class="text-center">
           <a href="images/app-logo.png">
-            <img src="images/app-logo.png" class="img-thumbnail p-2">
+            <img src="images/app-logo.png" class="img-fluid img-thumbnail">
           </a>
         </div>
       </div>
