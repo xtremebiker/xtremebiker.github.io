@@ -37,13 +37,39 @@ p, a, li {
     font-size: 18px;
 }
 
-#menu>li {
+#menu > li {
     margin-bottom: 5px;
 }
 
 .img-fluid {
     padding: 2px;
     border-radius: .25rem;
+}
+
+/** Scroll to up button https://www.w3schools.com/howto/howto_js_scroll_to_top.asp **/
+#scroll-up-button {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 20px; /* Place the button at the bottom of the page */
+    right: 30px; /* Place the button 30px from the right */
+    z-index: 99; /* Make sure it does not overlap */
+    border: none; /* Remove borders */
+    background-color: #0057b36b; /* Set a background color */
+    color: white; /* Text color */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    border-radius: 50%; /* Rounded corners */
+    font-size: 40px; /* Increase font size */
+    height: 50px;
+    width: 50px;
+    line-height: 1;
+}
+
+#scroll-up-button > span {
+    margin-bottom: 15px;
+}
+
+#scroll-up-button:hover {
+    background-color: #f700ff; /* Add a dark-grey background on hover */
 }
 
 /** Webkit based custom code scrollbars **/
