@@ -37,7 +37,7 @@
           <li><a href="#nginx">Nginx proxy</a></li>
           <li><a href="#run-sso">Running the SSO server</a></li>
           <li><a href="#backups">Configuring the DB backups</a></li>
-          <li><a href="#jhipster">Fast web application generation using jHipster</a></li>
+          <li><a href="#jhipster">Fast web application generation using jhipster</a></li>
           <li><a href="#continuous-integration">Configuring the continuous integration in gitlab</a></li>
           <li><a href="#greetings">Greetings</a></li>
         </ul>
@@ -70,7 +70,7 @@
             href="https://www.nginx.com/">nginx server</a>
           acting as a reverse proxy, managing the SSL certificates to encrypt the communication. The second server
           containing my own application happens to be
-          almost the identical in architectural means.
+          almost identical in architectural means.
         </p>
         <div class="text-center">
           <a href="images/architecture.png">
@@ -93,7 +93,7 @@
           2 GB of RAM,
           considering that the traffic won't be too high, this should be enough to fulfill my needs. The OS I chose was
           Ubuntu Server 18.04.</p>
-        <p>Once I had the domain and the servers, I wanted the servers to have names in that domain: I set up two
+        <p>Once I had the domain and the servers, I wanted the servers to have names: I set up two
           subdomains
           into my main domain, which are <span class="font-italic">auth.quienconduce.com</span> for the SSO server and
           <span class="font-italic">www.quienconduce.com</span> for my
@@ -137,7 +137,7 @@
           Then log in with the standard user and use <span class="font-weight-bold">sudo</span> when required:
           <pre><code>> ssh aritz@www.quienconduce.com</code></pre>
         </p>
-        <p id="sso" class="h4">keycloak as my SSO solution</p>
+        <p id="sso" class="h4">Keycloak as my SSO solution</p>
         <p>Keycloak is a Single Sign On solution brought by Red Hat, which
           provides:</p>
         <ul>
@@ -190,19 +190,21 @@
         - mariadb
       restart: on-failure</code></pre>
         <p>Basically, this downloads the images of MariaDB and keycloak from the <a
-            href="https://hub.docker.com/">docker Hub</a> and launches them in two containers, so as the SSO
+            href="https://hub.docker.com/">docker hub</a> and launches them in two containers, so as the SSO
           instance connects to the database. Also a user named "keycloak" will be created in the SSO server.</p>
         <p>Couple of security related things here, in the mariadb container
           the port 3306 from the host is binded to the 3306 of the container, but
           apart from this I added the localhost address before, meaning that the DB server will only be available in the
-          host machine. Also the passwords are set in docker environment variables, which
+          host machine. Also, since I like uploading the docker compose files to the source control server to keep track
+          of them,
+          the passwords are set in docker environment variables, which
           are grabbed from an <span class="font-italic">.env</span> file in the same directory of
-          the compose file, thus not being uploaded to the source control.</p>
+          the compose file, thus not being uploaded to the server.</p>
 
         <p id="db-client" class="h4">Managing the database through a web-based client</p>
         <p>Having a web based client available is quite convenient, in order to be able to make changes
           from any browser. If we want to use a more advanced desktop client, we can configure SSH tunneling later on.
-          The most popular tool for mysql/mariadb administration
+          The most popular tool for <a href="https://mariadb.com/kb/en/phpmyadmin/">mysql - mariadb administration</a>
           is phpmyadmin, so let's configure it in our docker compose file:
         </p>
         <pre><code>phpmyadmin:
@@ -215,7 +217,7 @@
     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     PMA_ABSOLUTE_URI: https://db.auth.quienconduce.com</code></pre>
         <p id="nginx" class="h4">Nginx proxy</p>
-        <p>With the given configuration, I've got three applications running: Mariadb, bound in the 3306 port, keycloak
+        <p>With the given configuration, I've got three applications running: mariadb, bound in the 3306 port, keycloak
           running in 8080 and phpmyadmin in 8081. But I would like to give names to
           these services to be publicly accessible. keycloak should be accessible by <span
             class="font-italic">https://auth.quienconduce.com</span> and
@@ -239,7 +241,10 @@
     ALLOWED_DOMAINS: 'quienconduce.com'</code></pre>
         <p>This isn't the standard nginx docker container, but a customized docker image which allows to
           integrate automatic SSL certificate generation for our site
-          (thanks <a href="https://github.com/Valian/docker-nginx-auto-ssl">@Valian</a> ;-)).
+          (thanks <a href="https://github.com/Valian/docker-nginx-auto-ssl">@Valian</a> ;-)). This image relies on
+          the <a href="https://openresty.org/en/">open resty server</a> and the <a href="https://letsencrypt.org/">let's
+            encrypt tool</a>:
+          a free, automated open certificate authority.
           We need to configure two
           docker volumes for this, the one needed for resty ssl data and
           the other for the nginx config itself. In our host machine, let's place two configuration files in
@@ -314,10 +319,10 @@ rclone --config="/home/aritz/.config/rclone/rclone.conf" copy /home/aritz/auth.s
           with the docker compose script configured to run in every reboot alongside:</p>
         <pre><code>00 00 * * * /home/aritz/backup.sh  >> /var/log/backup.log 2>&1
 @reboot /home/aritz/docker-compose.sh   >> /var/log/docker-compose.log 2>&1</code></pre>
-        <p id="jhipster" class="h4">Fast web application generation using jHipster</p>
+        <p id="jhipster" class="h4">Fast web application generation using jhipster</p>
         <p>Even if spring boot provides a great way to set up web applications in a breeze, I wanted to speed up the
           process and
-          decided to use the <a href="https://www.jhipster.tech/">jHipster</a> application generator. This tool is
+          decided to use the <a href="https://www.jhipster.tech/">jhipster</a> application generator. This tool is
           amazing since it lets you
           design your own entity domain model and then generate both the backend code written in java - spring and the
           front end using either Angular
@@ -327,6 +332,14 @@ rclone --config="/home/aritz/.config/rclone/rclone.conf" copy /home/aritz/auth.s
             <img src="images/jhipster-jdl.png" class="img-fluid">
           </a>
         </div>
+        <p>After having the model well dessigned and following the set up steps given by the tool, all the application
+          got up and running.
+          I got the hibernate entity classes, the CRUD operations for them implemented in a spring boot REST API, and
+          the web application with all the CRUD
+          operations implemented using Angular 7. Even the unit and some integration tests running the h2 database are
+          generated!
+          I've never been a big fan of code generation tools but this definitelly provides <span
+            class="font-weight-bold">value</span>.</p>
         <p id="continuous-integration" class="h4">Configuring the continuous integration in gitlab</p>
         <p>After finishing the set up and checked that everything was compiling, I uploaded my git repo to gitlab. This
           platform provides continuous integration
@@ -379,8 +392,15 @@ test:npm:
   stage: test
   script:
     - npm test</code></pre>
+        <p>This is how the project pipeline story looks like for the master branch:</p>
+        <div class="text-center">
+          <a href="images/gitlab-pipelines.png">
+            <img src="images/gitlab-pipelines.png" class="img-fluid">
+          </a>
+        </div>
         <p id="greetings" class="h4">Greetings</p>
-        <p>Last but not least, many thanks to @IreneUson who spent some time designing the logo for the website. Good
+        <p>Last but not least, many thanks to <a href="https://www.linkedin.com/in/irenuson/">@Irene Uson</a> who spent
+          some time designing the logo for the website. Good
           job!</p>
         <div class="text-center">
           <a href="images/app-logo.png">
