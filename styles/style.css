@@ -1,5 +1,5 @@
 body{
-    background: linear-gradient(to bottom right, #272626, #444343);
+    background: linear-gradient(to bottom right, #1A1A1A, #363636);
     height: 100%;
     margin: 0;
     background-repeat: no-repeat;
@@ -8,29 +8,26 @@ body{
     color: white;
 }
 
-.vertical-center {
-    min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-    min-height: 100vh; /* These two lines are counted as one :-)       */
-    display: flex;
-    align-items: center;
-}
-
 pre {
     background-color: black;
     border-radius: .25rem;
     padding: 5px;
     overflow-x: auto;
-    scrollbar-color: #f700ff #444343;
+    scrollbar-color: #F93DFF #242424;
     scrollbar-width: thin;
 }
 
 pre code {
-    color: #f700ff;
+    color: #F93DFF;
 }
 
 img, p {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+a {
+    color: #4DA3FF;
 }
 
 p, a, li {
@@ -54,7 +51,7 @@ p, a, li {
     right: 30px; /* Place the button 30px from the right */
     z-index: 99; /* Make sure it does not overlap */
     border: none; /* Remove borders */
-    background-color: #0057b36b; /* Set a background color */
+    background-color: #4DA3FF99; /* Set a background color */
     color: white; /* Text color */
     cursor: pointer; /* Add a mouse pointer on hover */
     border-radius: 50%; /* Rounded corners */
