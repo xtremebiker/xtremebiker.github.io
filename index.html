@@ -346,15 +346,38 @@ rclone --config="/home/aritz/.config/rclone/rclone.conf" copy /home/aritz/auth.s
           with pipelines for different stages, so it's quite handy for my project, even if I'm the only developer
           working on it.</p>
         <p>The stages defined in my pipeline
-          configuration file are build and test. Inside them, the maven and node docker images are used to build the
-          software and pass the test benchmarks, also
-          the dependencies are configured to be cached to speed up the pipeline process.
-          I want it to make the deployment in the future too, which basically generates the application
-          docker image which is uploaded to the docker hub.
+          configuration file are <span class="font-italic">build</span>, <span class="font-italic">test</span> and <span
+            class="font-italic">deploy</span>. The first two get executed on each of the code pushes and the
+          third only when a new branch is created.
+          Inside them, the maven and node docker images are used to build the
+          software and pass the test benchmarks, also the dependencies are configured to be cached to speed up the
+          pipeline process.
+        </p>
+        <p>
+          The <span class="font-italic">deploy</span> stage was the most tricky to configure here, since I rely on google's <a
+            href="https://github.com/GoogleContainerTools/jib">jib maven plugin</a>
+          to build the docker image containing my application and upload it to the docker hub registry. Since I need to
+          connect
+          to a docker daemon to build the image, but the maven image doesn't provide it directly, I used gitlab's
+          <a
+            href="https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-workflow-with-docker-executor">docker
+            in docker (dind)</a>
+          feature, which comes as a service and provides the job runners the choice to connect to a docker daemon.
+          Apart from this, I also needed to declare the <span class="font-italic">DOCKER_HOST</span> environment
+          variable and also
+          <span class="font-italic">DOCKER_REGISTRY_USER</span> and <span
+            class="font-italic">DOCKER_REGISTRY_PASS</span>, which are used
+          to provide the credentials for uploading to the docker hub and established in the gitlab CI settings, as I
+          don't want them in the
+          source control.
         </p>
         <pre><code>stages:
   - build
   - test
+  - deploy
+
+services:
+  - docker:dind
 
 variables:
   MAVEN_CLI_OPTS: '--batch-mode'
@@ -367,7 +390,7 @@ cache:
     - node_modules/
 
 install_dependencies:
-  image: node:latest
+  image: node:8.10.0
   stage: build
   script:
     - npm install
@@ -376,22 +399,32 @@ install_dependencies:
       - node_modules/
 
 build:mvn:
-  image: maven:latest
+  image: maven:3.6.3-jdk-8-openj9
   stage: build
   script:
     - mvn $MAVEN_CLI_OPTS clean compile
 
 test:mvn:
-  image: maven:latest
+  image: maven:3.6.3-jdk-8-openj9
   stage: test
   script:
     - mvn $MAVEN_CLI_OPTS clean test
 
 test:npm:
-  image: node:latest
+  image: node:8.10.0
   stage: test
   script:
-    - npm test</code></pre>
+    - npm test
+
+deploy:mvn:
+  image: maven:3.6.3-jdk-8-openj9
+  stage: deploy
+  script:
+    - export DOCKER_HOST=tcp://docker:2375
+    - mvn compile jib:build -Djib.to.auth.username=$DOCKER_REGISTRY_USER -Djib.to.auth.password=$DOCKER_REGISTRY_PWD
+  only:
+    - tags
+</code></pre>
         <p>This is how the project pipeline story looks like for the master branch:</p>
         <div class="text-center">
           <a href="images/gitlab-pipelines.png">
