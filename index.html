@@ -354,20 +354,13 @@ rclone --config="/home/aritz/.config/rclone/rclone.conf" copy /home/aritz/auth.s
           pipeline process.
         </p>
         <p>
-          The <span class="font-italic">deploy</span> stage was the most tricky to configure here, since I rely on google's <a
+          The <span class="font-italic">deploy</span> stage had a bit more to configure here, since I rely on google's <a
             href="https://github.com/GoogleContainerTools/jib">jib maven plugin</a>
-          to build the docker image containing my application and upload it to the docker hub registry. Since I need to
-          connect
-          to a docker daemon to build the image, but the maven image doesn't provide it directly, I used gitlab's
-          <a
-            href="https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#use-docker-in-docker-workflow-with-docker-executor">docker
-            in docker (dind)</a>
-          feature, which comes as a service and provides the job runners the choice to connect to a docker daemon.
-          Apart from this, I also needed to declare the <span class="font-italic">DOCKER_HOST</span> environment
-          variable and also
+          to build the docker image containing my application and upload it to the docker hub registry, so 
+          I needed to declare the 
           <span class="font-italic">DOCKER_REGISTRY_USER</span> and <span
-            class="font-italic">DOCKER_REGISTRY_PASS</span>, which are used
-          to provide the credentials for uploading to the docker hub and established in the gitlab CI settings, as I
+            class="font-italic">DOCKER_REGISTRY_PASS</span> environment variables, which are used
+          to provide the credentials for uploading to the docker hub and are established in the gitlab CI settings, as I
           don't want them in the
           source control.
         </p>
@@ -375,9 +368,6 @@ rclone --config="/home/aritz/.config/rclone/rclone.conf" copy /home/aritz/auth.s
   - build
   - test
   - deploy
-
-services:
-  - docker:dind
 
 variables:
   MAVEN_CLI_OPTS: '--batch-mode'
@@ -420,7 +410,6 @@ deploy:mvn:
   image: maven:3.6.3-jdk-8-openj9
   stage: deploy
   script:
-    - export DOCKER_HOST=tcp://docker:2375
     - mvn compile jib:build -Djib.to.auth.username=$DOCKER_REGISTRY_USER -Djib.to.auth.password=$DOCKER_REGISTRY_PWD
   only:
     - tags
