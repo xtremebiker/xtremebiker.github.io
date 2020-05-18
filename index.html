@@ -23,6 +23,7 @@
 
   <nav class="navbar navbar-dark bg-dark">
     <span class="h2 mx-auto">Car pooling application architecture and setup</span>
+    <a href="https://gitlab.com/xtremebiker/carpooling"><img src="images/gitlab-logo.png" style="max-height: 50px;"></a>
   </nav>
 
   <div class="container-fluid p-3">
@@ -189,7 +190,7 @@
       depends_on:
         - mariadb
       restart: on-failure</code></pre>
-        <p>Basically, this downloads the images of MariaDB and keycloak from the <a
+        <p>Basically, this downloads the images of mariaDB and keycloak from the <a
             href="https://hub.docker.com/">docker hub</a> and launches them in two containers, so as the SSO
           instance connects to the database. Also a user named "keycloak" will be created in the SSO server.</p>
         <p>Couple of security related things here, in the mariadb container
